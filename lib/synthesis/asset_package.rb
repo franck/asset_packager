@@ -168,7 +168,6 @@ module Synthesis
         
         ruby_path = [Synthesis::AssetPackage.options[:ruby_path], "ruby"].compact
         ruby_command = File.join(*ruby_path)
-        log "RUBY PATH : #{ruby_command}"
       
         # write out to a temp file
         File.open("#{tmp_path}_uncompressed.js", "w") {|f| f.write(source) }
