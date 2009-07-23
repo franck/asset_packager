@@ -1,12 +1,20 @@
 module Synthesis
   class AssetPackage
 
+    
     # class variables
     @@asset_packages_yml = $asset_packages_yml || 
       (File.exists?("#{RAILS_ROOT}/config/asset_packages.yml") ? YAML.load_file("#{RAILS_ROOT}/config/asset_packages.yml") : nil)
   
     # singleton methods
     class << self
+    
+      def options
+        @options ||= {
+          :jsmin_path     => "#{RAILS_ROOT}/vendor/plugins/asset_packager/lib",
+          :ruby_path      => nil
+        }
+      end
       
       def merge_environments=(environments)
         @@merge_environments = environments
@@ -155,14 +163,18 @@ module Synthesis
       end
 
       def compress_js(source)
-        jsmin_path = "#{RAILS_ROOT}/vendor/plugins/asset_packager/lib"
+        jsmin_path = Synthesis::AssetPackage.options[:jsmin_path]
         tmp_path = "#{RAILS_ROOT}/tmp/#{@target}_packaged"
+        
+        ruby_path = [Synthesis::AssetPackage.options[:ruby_path], "ruby"].compact
+        ruby_command = File.join(*ruby_path)
+        log "RUBY PATH : #{ruby_command}"
       
         # write out to a temp file
         File.open("#{tmp_path}_uncompressed.js", "w") {|f| f.write(source) }
       
         # compress file with JSMin library
-        `ruby #{jsmin_path}/jsmin.rb <#{tmp_path}_uncompressed.js >#{tmp_path}_compressed.js \n`
+        `#{ruby_command} #{jsmin_path}/jsmin.rb <#{tmp_path}_uncompressed.js >#{tmp_path}_compressed.js \n`
 
         # read it back in and trim it
         result = ""

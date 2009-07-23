@@ -1,3 +1,17 @@
+= Fork info
+
+Adding options to configure ruby path and jsmin path.
+
+Use Rails' app initializer.
+
+Create a asset_packager.rb file in config/initializers :
+
+Synthesis::AssetPackage.options[:ruby_path] = "/opt/ruby-enterprise/bin/"
+Synthesis::AssetPackage.options[:jsmin_path] = "#{RAILS_ROOT}/vendor/plugins/franck_asset_packager/lib"
+
+Then,
+rake asset:packager:build_all
+
 = AssetPackager
 
 JavaScript and CSS Asset Compression for Production Rails Apps
